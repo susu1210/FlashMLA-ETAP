@@ -56,51 +56,15 @@ for i in range(num_layers):
 
 FlashMLA is inspired by [FlashAttention 2&3](https://github.com/dao-AILab/flash-attention/) and [cutlass](https://github.com/nvidia/cutlass) projects.
 
-## Community Support
 
-### MetaX
-For MetaX GPUs, visit the official website: [MetaX](https://www.metax-tech.com).
-
-The corresponding FlashMLA version can be found at: [MetaX-MACA/FlashMLA](https://github.com/MetaX-MACA/FlashMLA)
-
-
-### Moore Threads
-For the Moore Threads GPU, visit the official website: [Moore Threads](https://www.mthreads.com/).
-
-The corresponding FlashMLA version is available on GitHub: [MooreThreads/MT-flashMLA](https://github.com/MooreThreads/MT-flashMLA).
-
-
-### Hygon DCU
-For the Hygon DCU, visit the official website: [Hygon Developer](https://developer.sourcefind.cn/).
-
-The corresponding FlashMLA version is available here: [OpenDAS/MLAttention](https://developer.sourcefind.cn/codes/OpenDAS/MLAttention).
-
-
-### Intellifusion
-For the Intellifusion NNP, visit the official website: [Intellifusion](https://www.intellif.com).
-
-The corresponding FlashMLA version is available on Gitee: [Intellifusion/tyllm](https://gitee.com/Intellifusion_2025/tyllm/blob/master/python/tylang/flash_mla.py).
-
-
-### Iluvatar Corex
-For Iluvatar Corex GPUs, visit the official website: [Iluvatar Corex](https://www.iluvatar.com).
-
-The corresponding FlashMLA version is available on GitHub: [Deep-Spark/FlashMLA](https://github.com/Deep-Spark/FlashMLA/tree/iluvatar_flashmla)
-
-
-### AMD Instinct
-For AMD Instinct GPUs, visit the official website: [AMD Instinct](https://www.amd.com/en/products/accelerators/instinct.html).
-
-The corresponding FlashMLA version can be found at: [AITER/MLA](https://github.com/ROCm/aiter/blob/main/aiter/mla.py)
 
 ## Citation
-
 ```bibtex
 @misc{flashmla2025,
-      title={FlashMLA: Efficient MLA decoding kernels},
-      author={Jiashi Li, Shengyu Liu},
+      title={FlashMLA-ETAP: Efficient Transpose Attention Pipeline for Accelerating MLA Inference on NVIDIA H20 GPUs},
+      author={Pengcuo Dege, Chang Kong},
       year={2025},
       publisher = {GitHub},
-      howpublished = {\url{https://github.com/deepseek-ai/FlashMLA}},
+      howpublished = {\url{https://github.com/pengcuo/FlashMLA-ETAP}},
 }
 ```
