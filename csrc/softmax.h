@@ -73,7 +73,6 @@ __device__ __forceinline__ void reduce_max(Tensor<Engine0, Layout0> const& tenso
     reduce_<zero_init>(tensor, max, max_op);
 }
 
-
 __device__ __forceinline__ float compute_group_max(float val) {
     const unsigned int lane_id = threadIdx.x % 32;
     const int group_id = lane_id % 4;
@@ -86,7 +85,6 @@ __device__ __forceinline__ float compute_group_max(float val) {
     return val;
 }
 
-
 __device__ __forceinline__ float compute_group_sum(float val) {
     const unsigned int lane_id = threadIdx.x % 32;
     const int group_id = lane_id % 4;
@@ -98,7 +96,6 @@ __device__ __forceinline__ float compute_group_sum(float val) {
 
     return val;
 }
-
 
 template<typename Engine1, typename Layout1>
 __device__ __forceinline__ float group_4x8_4_max(Tensor<Engine1, Layout1> &max) {
@@ -132,8 +129,6 @@ __device__ __forceinline__ float group_4x8_4_max(Tensor<Engine1, Layout1> &max) 
     }
 }
 
-
-
 template<typename Engine1, typename Layout1>
 __device__ __forceinline__ float reduce_group_4x8_4_sum(Tensor<Engine1, Layout1> &sum) {
     const int query_size = 4;
@@ -166,8 +161,6 @@ __device__ __forceinline__ float reduce_group_4x8_4_sum(Tensor<Engine1, Layout1>
     }
 }
 
-
-
 template<bool zero_init=true, typename Engine0, typename Layout0, typename Engine1, typename Layout1>
 __device__ __forceinline__ void reduce_group_4x8_4_max(Tensor<Engine0, Layout0> const& tensor, Tensor<Engine1, Layout1> &max){
     MaxOp<float> max_op;
@@ -175,7 +168,6 @@ __device__ __forceinline__ void reduce_group_4x8_4_max(Tensor<Engine0, Layout0> 
 
     group_4x8_4_max(max);
 }
-
 
 template<bool zero_init=true, typename Engine0, typename Layout0, typename Engine1, typename Layout1>
 __device__ __forceinline__ void reduce_sum(Tensor<Engine0, Layout0> const& tensor, Tensor<Engine1, Layout1> &sum){
@@ -274,107 +266,13 @@ struct Softmax {
         TensorT scale_o;
         clear(scale_o);
 
-        // if(threadIdx.x == 0) {
-        //     print("softmax kNRows %d\n", kNRows);
-        // }
-
-        // int tidx = threadIdx.x;
-        // if (tidx == 0) {
-        //     print("start compute softmax\n");
-
-        //     print(scores);
-
-        //     for(int i = 0; i < size(scores); ++i) {
-        //         print("scores %f\n", scores(i));
-        //     }
-
-        //     for(int i = 0; i < size(row_max); ++i) {
-        //         print("row_max %f\n", row_max(i));
-        //     }
-        //     for(int i = 0; i < size(row_sum); ++i) {
-        //         print("row_sum %f\n", row_sum(i));
-        //     }
-        //     print("init end \n");
-        // }
         if (Is_first) {
-
             // blockn = 64, row_max
             // flash::template reduce_max</*zero_init=*/true>(scores, row_max);
             flash::template reduce_group_4x8_4_max</*zero_init=*/true>(scores, row_max);
-
-            // if(tidx == 0) {
-
-            //     for(int i = 0; i < size(scores); ++i) {
-            //         print("aa scores %f\n", scores(i));
-            //     }
-
-            //     for(int i = 0; i < size(row_max); ++i) {
-            //         print("row_max %f\n", row_max(i));
-            //     }
-            //     for(int i = 0; i < size(row_sum); ++i) {
-            //         print("aa row_sum %f\n", row_sum(i));
-            //     }
-            //     print("xxxxx \n");
-
-            //     // print("p\n");
-            //     // print(p);
-            //     // print("\n");
-            // }
-
-
-            // flash::template reduce_max_from_shared_mem</*zero_init=*/true>(p, row_max);
-
-            // if(tidx == 0) {
-            //     for(int i = 0; i < size(row_max); ++i) {
-            //         print("row_max %f\n", row_max(i));
-            //     }
-            //     print("yyy \n");
-            // }
-
-
-
-
             flash::scale_apply_exp2(scores, row_max, softmax_scale_log2);
 
-
-
-            // if(tidx == 0) {
-
-            //     for(int i = 0; i < size(scores); ++i) {
-            //         print("xx scores %f\n", scores(i));
-            //     }
-
-            //     for(int i = 0; i < size(row_max); ++i) {
-            //         print("row_max %f\n", row_max(i));
-            //     }
-            //     for(int i = 0; i < size(row_sum); ++i) {
-            //         print("xx row_sum %f\n", row_sum(i));
-            //     }
-            //     print("init end \n");
-
-            // }
-
-
             flash::reduce_sum</*zero_init=*/true>(scores, row_sum);
-
-            // if(tidx == 0) {
-
-            //     for(int i = 0; i < size(scores); ++i) {
-            //         print("ss scores %f\n", scores(i));
-            //     }
-
-            //     for(int i = 0; i < size(row_max); ++i) {
-            //         print("row_max %f\n", row_max(i));
-            //     }
-            //     for(int i = 0; i < size(row_sum); ++i) {
-            //         print("ss row_sum %f\n", row_sum(i));
-            //     }
-            //     print("init end \n");
-
-            // }
-
-
-
         } else {
             Tensor scores_max_prev = make_fragment_like(row_max);
             cute::copy(row_max, scores_max_prev);
