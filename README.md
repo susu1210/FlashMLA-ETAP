@@ -29,7 +29,7 @@ python setup.py install
 ### Benchmark
 
 ```bash
-python tests/test_flash_mla.py
+python3 tests/pengcuo_test_flash_mla.py 
 ```
 
 It is able up to 3000 GB/s in memory-bound configuration and 660 TFLOPS in computation-bound configuration on H800 SXM5, using CUDA 12.8.
