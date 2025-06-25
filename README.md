@@ -32,9 +32,6 @@ python setup.py install
 python3 tests/pengcuo_test_flash_mla.py 
 ```
 
-It is able up to 3000 GB/s in memory-bound configuration and 660 TFLOPS in computation-bound configuration on H800 SXM5, using CUDA 12.8.
-
-Note. For memory-bound cases, we recommend using version [b31bfe7](https://github.com/deepseek-ai/FlashMLA/tree/b31bfe72a83ea205467b3271a5845440a03ed7cb) for optimal performance.
 
 ### Usage
 
