@@ -193,8 +193,8 @@ __forceinline__ __device__ void store(const Flash_fwd_mla_params &params, const 
     auto thr_mma_o = tiled_mma_o.get_thread_slice(tidx);
 
     // Epilogue
-
-    const int split_offset = __ldg(params.num_splits_ptr + bidb);
+    // Don't use __ldg because of PDL and instruction reordering
+    const int split_offset = params.num_splits_ptr[bidb];
 
     Tensor lse = softmax.template normalize_softmax_lse</*Is_dropout=*/false, Split>(tOrO, params.scale_softmax);
 
@@ -519,13 +519,14 @@ flash_fwd_splitkv_mla_kernel(__grid_constant__ const Flash_fwd_mla_params params
     auto &shared_storage = *reinterpret_cast<SharedStorage *>(shared_memory);
 
     int *tile_scheduler_metadata_ptr = params.tile_scheduler_metadata_ptr + partition_idx * TileSchedulerMetaDataSize;
-    int4 tile_scheduler_metadata = __ldg(reinterpret_cast<int4 *>(tile_scheduler_metadata_ptr));
+    // We don't use __ldg here, otherwise NVCC (ptxas, in particular) will do instruction reorder and place __ldg (LDG.E.128.CONSTANT in SASS) in front of cudaGridDependencySynchronize() (ACQBULK in SASS), leading to data race.
+    int4 tile_scheduler_metadata = *(reinterpret_cast<int4 *>(tile_scheduler_metadata_ptr));    
     int begin_idx = tile_scheduler_metadata.x;
     int begin_seqlen = tile_scheduler_metadata.y;
     int end_idx = tile_scheduler_metadata.z;
     int end_seqlen = tile_scheduler_metadata.w;
     if (begin_idx >= params.b) return;
-    int begin_n_split_idx = __ldg(tile_scheduler_metadata_ptr + 4);
+    int begin_n_split_idx = *(tile_scheduler_metadata_ptr + 4);
 
 #pragma unroll 1
     for (int batch_id = begin_idx; batch_id <= end_idx; ++batch_id) {
