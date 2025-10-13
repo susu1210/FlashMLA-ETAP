@@ -392,6 +392,7 @@ __forceinline__ __device__ void compute_attn_1rowblock_splitkv_mla(const Flash_f
             Tensor rP = flash::convert_type<Element>(tSrS);
             cute::copy(rP, mtPsP); // we need to find max in shared memory, because we transpose the p matrix
             cute::copy(scale_o, tScale_osScale_o);
+            cutlass::arch::fence_view_async_shared();
 
             cutlass::arch::NamedBarrier::arrive(kNThreads, static_cast<int>(NamedBarriers::SReady));
 
@@ -477,6 +478,7 @@ __forceinline__ __device__ void compute_attn_1rowblock_splitkv_mla(const Flash_f
                 cute::cp_async_fence();
             }
 
+            // sync with the __syncthreads() in softmax
             __syncthreads();
             cutlass::arch::NamedBarrier::sync(kNThreads, static_cast<int>(NamedBarriers::SReady));
 
